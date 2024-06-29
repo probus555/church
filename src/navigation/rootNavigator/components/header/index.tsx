@@ -23,11 +23,15 @@ const Header: React.FC<StackHeaderProps> = ({navigation, route, options, back}) 
         <Icon
           name="chevron-left"
           color={theme.colors.onPrimary}
+          
   
           onPress={() => navigation.goBack()}
           size={32}
         />
       )}
+
+
+      
       <Text style={styles.headerText}>{title}</Text>
       {/* {route.name !== screenNames.notificationScreen && (
         <View style={styles.notificationContainer}>

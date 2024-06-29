@@ -9,14 +9,14 @@ const useStyles = () => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: 16,
+      padding: 5,
       backgroundColor: theme.colors.primary,
     },
     headerText: {
-      flex: 1,
       color: theme.colors.onPrimary,
       fontSize: 20,
-      // textAlign: 'center',
+
+      padding: 10,
     },
     notificationContainer: {
       flexDirection: 'row',

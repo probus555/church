@@ -15,7 +15,7 @@ import {
 } from '../../redux/slices/emloyeeSlice';
 // import {getEmployeeDetails} from '../../services/sqlite/employee';
 // import {getEmployeeMPIN} from '../../services/sqlite/mpin';
-import {useLazyLoginQuery} from '../../redux/services/auth/login/LoginApiSlice';
+import {useLazyLoginQuery, useAddFCMMutation,} from '../../redux/services/auth/login/LoginApiSlice';
 import {useMMKV, useMMKVObject, useMMKVString} from 'react-native-mmkv';
 import {setPinMode} from '../../redux/slices/pinSlice';
 import {PinCodeT} from '@anhnch/react-native-pincode';
@@ -27,7 +27,7 @@ import {setSnackMessage} from '../../redux/slices/snackbarSlice';
 import initializeMessaging from '../../common/utils/helper/FCM';
 
 const useSplash = () => {
-  //   const [addFCMToken, addFCMTokenResult] = useAddFCMMutation();
+    const [addFCMToken, addFCMTokenResult] = useAddFCMMutation();
   //   const asyncStorage = useAsyncStorage();
   const navigation = useNavigation<NavigationActionType>();
   const dispatch = useAppDispatch();
@@ -56,20 +56,20 @@ const useSplash = () => {
     }
   };
 
-  //   const registerFCMServices = async () => {
-  //     try {
-  //       const {permissionGranted, token, error} = await initializeMessaging();
-  //       console.log('token', token);
-  //       if (permissionGranted && token) {
-  //         await addFCMToken({fcmToken: token});
-  //       }
-  //     } catch (error) {
-  //       console.error('An error occurred while registering FCM services:', error);
-  //       // You can handle the error here according to your application's logic
-  //     }
-  //   };
+    const registerFCMServices = async () => {
+      try {
+        const {permissionGranted, token, error} = await initializeMessaging();
+        console.log('token', token);
+        if (permissionGranted && token) {
+          await addFCMToken({fcmTokens: token});
+        }
+      } catch (error) {
+        console.error('An error occurred while registering FCM services:', error);
+        // You can handle the error here according to your application's logic
+      }
+    };
 
-  //   console.log(addFCMTokenResult);
+    console.log(addFCMTokenResult);
 
   const handlePinType = () => {
     if (pin?.length > 0) {
@@ -82,7 +82,7 @@ const useSplash = () => {
     try {
       const loginResponse = await autoLoginUser();
       if (loginResponse) {
-        // await registerFCMServices();
+        await registerFCMServices();
         if (employeeId) {
         const  employeeData = await getUserDetails(employeeId).unwrap();
         console.log('employeeData ', employeeData)

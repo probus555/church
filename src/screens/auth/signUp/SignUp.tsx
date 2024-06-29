@@ -7,6 +7,8 @@ import {
   Modal,
   StyleSheet,
   TouchableOpacity,
+  Image,
+ 
 } from 'react-native';
 import {useAppTheme} from '../../../theme';
 import useStyles from './useStyles';
@@ -23,9 +25,10 @@ import {Calendar} from 'react-native-calendars';
 import {useNavigation} from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import {pickDirectory} from '@react-native-documents/picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import PasswordInput from '../../../components/passwordInput/PasswordInput';
-
+const avatarImage = { uri: 'https://www.w3schools.com/howto/img_avatar.png' }; // Replace with the path to your avatar image
 const SignUp: React.FC = () => {
   const [date, setDate] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
@@ -49,6 +52,7 @@ const SignUp: React.FC = () => {
   const [adharNo, setAdharNo] = useState('');
   const [nameAsAadhar, setNameAsAadhar] = useState('');
   const [file, setFile] = useState(null); // File state if needed
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const styles = useStyles();
   const navigation = useNavigation<RootStackParamList>();
@@ -58,6 +62,21 @@ const SignUp: React.FC = () => {
     fetchDeviceId();
     fetchIpAddress();
   }, []);
+
+  const handleImagePicker = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setSelectedImage({ uri: image.path });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
 
   useEffect(() => {
     const fetchStates = async () => {
@@ -218,6 +237,8 @@ const SignUp: React.FC = () => {
     setShow(true);
   };
 
+
+
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || dateb;
     setShow(Platform.OS === 'ios');
@@ -268,8 +289,36 @@ const SignUp: React.FC = () => {
             <Text variant="displaySmall" style={styles.loginText}>
               Registration Form
             </Text>
-
-          
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ position: 'relative' }}>
+        <Image
+          source={selectedImage || avatarImage}
+          style={{
+            width: 100,
+            height: 100,
+            borderRadius: 50,
+            borderWidth: 2,
+            borderColor: '#000',
+          }}
+        />
+        <TouchableOpacity
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            right: 0,
+            backgroundColor: '#000',
+            borderRadius: 15,
+            padding: 5,
+          }}
+          onPress={handleImagePicker}
+        >
+          <Icon name="pencil" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+      {/* {!selectedImage && (
+        <Text style={{ marginTop: 10, color: '#888', fontSize: 16 }}>No image selected</Text>
+      )} */}
+    </View>
             <View style={styles.inputContainer}>
             <View>
                 <Text style={styles.inputLabel}>Full Name</Text>
@@ -544,3 +593,72 @@ export default SignUp;
 // });
 
 // export default HomeScreen;
+
+
+
+
+
+
+
+
+// import React, { useState } from 'react';
+// import { View, Image, Button, StyleSheet, Text } from 'react-native';
+// import ImagePicker from 'react-native-image-crop-picker';
+
+// const avatarImage = { uri: 'https://www.w3schools.com/howto/img_avatar.png' }; // Replace with the path to your avatar image
+
+// const ImageCropPickerExample = () => {
+//   const [selectedImage, setSelectedImage] = useState(null);
+
+//   const handleImagePicker = () => {
+//     ImagePicker.openPicker({
+//       width: 300,
+//       height: 400,
+//       cropping: true,
+//     })
+//       .then(image => {
+//         console.log(image);
+//         setSelectedImage({ uri: image.path });
+//       })
+//       .catch(error => {
+//         console.error(error);
+//       });
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//        <Image
+//         source={selectedImage || avatarImage}
+//         style={styles.image}
+//       />
+//             {/* {!selectedImage && <Text style={styles.placeholderText}>No image selected</Text>} */}
+//       <Button title="Select Image" onPress={handleImagePicker} />
+     
+
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   image: {
+//     width: 100,
+//     height: 100,
+//     marginTop: 20,
+//     borderRadius: 50,
+//     borderWidth: 2,
+//     borderColor: '#000',
+//   },
+//   placeholderText: {
+//     marginTop: 10,
+//     color: '#888',
+//     fontSize: 16,
+//   },
+// });
+
+// export default ImageCropPickerExample;
+

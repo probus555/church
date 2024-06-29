@@ -135,14 +135,14 @@ console.log('userDetails?.photo',userDetails?.photo)
         </LinearGradient>
         {userDetails ? (
           <View style={styles.userDetailContainer}>
-            <View style={styles.userDetailsWrapper}>
+            {/* <View style={styles.userDetailsWrapper}>
               <Icon
                 name="card-account-details"
                 size={25}
                 color={theme.colors.tertiary}
               />
               <Text style={styles.userDetailText}>{userDetails?.id}</Text>
-            </View>
+            </View> */}
 
             <View style={styles.userDetailsWrapper}>
               <Icon
@@ -216,3 +216,10 @@ console.log('userDetails?.photo',userDetails?.photo)
 };
 
 export default Profile;
+
+
+
+
+
+
+
