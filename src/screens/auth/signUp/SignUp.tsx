@@ -1,33 +1,28 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   KeyboardAvoidingView,
   ScrollView,
   View,
   Platform,
   Modal,
-  StyleSheet,
   TouchableOpacity,
   Image,
+  StyleSheet,
 } from 'react-native';
-import {useAppTheme} from '../../../theme';
+import { useAppTheme } from '../../../theme';
 import useStyles from './useStyles';
-import {Button, Divider, TextInput} from 'react-native-paper';
-import {Text} from '../../../components/Text/Text';
+import { Button, Divider, TextInput } from 'react-native-paper';
+import { Text } from '../../../components/Text/Text';
 import DropdownComponent from '../../../components/dropdown';
-import CalenderModal from '../../../components/calender';
-import {
-  RootStackParamList,
-  screenNames,
-} from '../../../navigation/rootNavigator/types';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { RootStackParamList, screenNames } from '../../../navigation/rootNavigator/types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Calendar} from 'react-native-calendars';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import Header from './header';
 import ImagePicker from 'react-native-image-crop-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import PasswordInput from '../../../components/passwordInput/PasswordInput';
-// const avatarImage = {uri: 'https://www.w3schools.com/howto/img_avatar.png'}; // Replace with the path to your avatar image
+import axios from 'axios';
+
 const SignUp: React.FC = () => {
   const [date, setDate] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
@@ -50,9 +45,9 @@ const SignUp: React.FC = () => {
   const [iND_ReffName, setIND_ReffName] = useState('');
   const [adharNo, setAdharNo] = useState('');
   const [nameAsAadhar, setNameAsAadhar] = useState('');
-  const [file, setFile] = useState(null); // File state if needed
+  const [file, setFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const avatarImage = {uri: 'path_to_default_avatar_image'};
+  const avatarImage = { uri: 'path_to_default_avatar_image' };
 
   const styles = useStyles();
   const navigation = useNavigation<RootStackParamList>();
@@ -61,152 +56,65 @@ const SignUp: React.FC = () => {
   useEffect(() => {
     fetchDeviceId();
     fetchIpAddress();
-    // saveCHCFID();
   }, []);
 
-  const saveCHCFID = selectedChurchId => {
-    setMAS_CHC_FID(selectedChurchId);
-  };
-
-  // const handleImagePicker = () => {
-  //   ImagePicker.openPicker({
-  //     width: 300,
-  //     height: 400,
-  //     cropping: true,
-  //   })
-  //     .then(image => {
-  //       console.log(image);
-  //       setSelectedImage({ uri: image.path });
-  //     })
-  //     .catch(error => {
-  //       console.error(error);
-  //     });
-  // };
-
-  const handleImagePicker = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    })
-      .then(image => {
-        console.log(image);
-        setFile(image); // Store the whole image object
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  };
-
-  useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await fetch('http://97.74.95.178:8080/api/GetState', {
-          method: 'GET',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-          },
-        });
-        const result = await response.json();
-        if (result.status === 200) {
-          const mappedStates = result.data.map(state => ({
-            label: state.name,
-            value: state.id,
-          }));
-          setStates(mappedStates);
-          console.log(mappedStates); // Log the mapped list of states to the console
-        } else {
-          console.error('Failed to fetch states');
-        }
-      } catch (error) {
-        console.error('Error fetching states:', error);
-      }
-    };
-
-    fetchStates();
-  }, []);
-
-  const handleSubmit = async () => {
+  const fetchDeviceId = async () => {
     try {
-      const formData = new FormData();
-      formData.append('macID', macID);
-      formData.append('macIP', macIP);
-      formData.append('mAS_CHC_FID', mAS_CHC_FID);
-      formData.append('iND_Name', iND_Name);
-      formData.append('iND_Mob', iND_Mob);
-      formData.append('iND_Email', iND_Email);
-      formData.append('iND_Address', iND_Address);
-      formData.append('iND_DOJ', iND_DOJ);
-      formData.append('iND_DOB', iND_DOB);
-      formData.append('iND_ReffName', iND_ReffName);
-      formData.append('adharNo', adharNo);
-      formData.append('nameAsAadhar', nameAsAadhar);
-      // if (file) {
-      //   formData.append('file', file);
-      // }
-
-
-      // if (selectedImage) {
-      //   formData.append('file', {
-      //     uri: file.path,
-      //     type: file.mime,
-      //     name: file.filename || file.path.split('/').pop(),
-      //   });
-      // }
-
-      console.log('formData', formData);
-
-      const response = await fetch(
-        'http://97.74.95.178:8080/api/NewRegistration',
-        {
-          method: 'POST',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formData,
-        },
-      );
-
-      console.log(response);
-
-      const result = await response.json();
-
-      console.log(result);
-
-      if (response.status === 200) {
-        console.log('Registration successful:', result.message);
-        navigation.replace(screenNames.login);
-        // Handle success, e.g., show success message or redirect
-      } else {
-        console.error('Registration failed:', result.message);
-        // Handle error, e.g., show error message to user
-      }
+      const id = DeviceInfo.getDeviceId();
+      setMacID(id);
     } catch (error) {
-      console.error('Error during registration:', error);
-      // Handle network error or other exceptions
+      console.error('Error fetching device ID:', error);
     }
   };
 
-  
+  const fetchIpAddress = async () => {
+    try {
+      const ip = await DeviceInfo.getIpAddress();
+      setMacIP(ip);
+    } catch (error) {
+      console.error('Error fetching IP address:', error);
+    }
+  };
+
+
+
+  const fetchStates = async () => {
+    try {
+      const response = await axios.get('http://97.74.95.178:8080/api/GetState', {
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
+        },
+      });
+      if (response.data.status === 200) {
+        const mappedStates = response.data.data.map(state => ({
+          label: state.name,
+          value: state.id,
+        }));
+        setStates(mappedStates);
+        console.log(mappedStates); // Log the mapped list of states to the console
+      } else {
+        console.error('Failed to fetch states');
+      }
+    } catch (error) {
+      console.error('Error fetching states:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStates();
+  }, []);
 
   const fetchCities = async stateId => {
     try {
-      const response = await fetch(
-        `http://97.74.95.178:8080/api/GetCity?StateId=${stateId}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-          },
+      const response = await axios.get(`http://97.74.95.178:8080/api/GetCity?StateId=${stateId}`, {
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
         },
-      );
-      const result = await response.json();
-      if (result.status === 200) {
-        const mappedCities = result.data.map(city => ({
+      });
+      if (response.data.status === 200) {
+        const mappedCities = response.data.data.map(city => ({
           label: city.name,
           value: city.id,
         }));
@@ -248,6 +156,7 @@ const SignUp: React.FC = () => {
     }
   };
 
+
   const onStateChange = state => {
     setSelectedState(state);
     fetchCities(state.value);
@@ -281,29 +190,70 @@ const SignUp: React.FC = () => {
     setIND_DOB(formattedDate);
   };
 
-  const fetchDeviceId = async () => {
+  const handleImagePicker = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setFile(image); // Store the whole image object
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  const handleSubmit = async () => {
     try {
-      const id = DeviceInfo.getDeviceId();
-      setMacID(id);
+      const formData = new FormData();
+      formData.append('macID', macID);
+      formData.append('macIP', macIP);
+      formData.append('mAS_CHC_FID', mAS_CHC_FID);
+      formData.append('iND_Name', iND_Name);
+      formData.append('iND_Mob', iND_Mob);
+      formData.append('iND_Email', iND_Email);
+      formData.append('iND_Address', iND_Address);
+      formData.append('iND_DOJ', iND_DOJ);
+      formData.append('iND_DOB', iND_DOB);
+      formData.append('iND_ReffName', iND_ReffName);
+      formData.append('adharNo', adharNo);
+      formData.append('nameAsAadhar', nameAsAadhar);
+      if (file) {
+        formData.append('file', {
+          uri: file.path,
+          name: 'image.jpg', // You can change the name and extension based on your needs
+          type: file.mime,
+        });
+      }
+  
+      // Log the formData before sending
+      console.log('FormData:', formData);
+  
+      const response = await axios.post('http://97.74.95.178:8080/api/NewRegistration', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
+        },
+      });
+  
+      if (response.data.status === 200) {
+        alert('Data submitted successfully');
+        navigation.replace(screenNames.login);
+        console.log('Success:', response.data);
+      } else {
+        alert('Error submitting data');
+        console.log('Failure:', response.data);
+      }
     } catch (error) {
-      console.error('Error fetching device ID:', error);
+      console.error('Error submitting data:', error);
     }
   };
 
-  const fetchIpAddress = async () => {
-    try {
-      const ip = await DeviceInfo.getIpAddress();
-      setMacIP(ip);
-    } catch (error) {
-      console.error('Error fetching IP address:', error);
-    }
-  };
 
-  const validateFidFormat = fid => {
-    // Assuming the FID should be a 16-character alphanumeric string
-    const fidPattern = /^[a-zA-Z0-9]{16}$/;
-    return fidPattern.test(fid);
-  };
+  
+  
 
   return (
     <KeyboardAvoidingView
@@ -393,6 +343,7 @@ const SignUp: React.FC = () => {
                     placeholder="Select Church"
                     labelField={'label'}
                     valueField={'value'}
+                  
                   />
                 </View>
               </View>
@@ -559,3 +510,4 @@ const SignUp: React.FC = () => {
 };
 
 export default SignUp;
+
