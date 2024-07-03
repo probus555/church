@@ -8,7 +8,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
- 
 } from 'react-native';
 import {useAppTheme} from '../../../theme';
 import useStyles from './useStyles';
@@ -24,11 +23,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Calendar} from 'react-native-calendars';
 import {useNavigation} from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
-import {pickDirectory} from '@react-native-documents/picker';
+import Header from './header';
 import ImagePicker from 'react-native-image-crop-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import PasswordInput from '../../../components/passwordInput/PasswordInput';
-const avatarImage = { uri: 'https://www.w3schools.com/howto/img_avatar.png' }; // Replace with the path to your avatar image
+// const avatarImage = {uri: 'https://www.w3schools.com/howto/img_avatar.png'}; // Replace with the path to your avatar image
 const SignUp: React.FC = () => {
   const [date, setDate] = useState('');
   const [showCalendar, setShowCalendar] = useState(false);
@@ -53,6 +52,7 @@ const SignUp: React.FC = () => {
   const [nameAsAadhar, setNameAsAadhar] = useState('');
   const [file, setFile] = useState(null); // File state if needed
   const [selectedImage, setSelectedImage] = useState(null);
+  const avatarImage = {uri: 'path_to_default_avatar_image'};
 
   const styles = useStyles();
   const navigation = useNavigation<RootStackParamList>();
@@ -61,7 +61,27 @@ const SignUp: React.FC = () => {
   useEffect(() => {
     fetchDeviceId();
     fetchIpAddress();
+    // saveCHCFID();
   }, []);
+
+  const saveCHCFID = selectedChurchId => {
+    setMAS_CHC_FID(selectedChurchId);
+  };
+
+  // const handleImagePicker = () => {
+  //   ImagePicker.openPicker({
+  //     width: 300,
+  //     height: 400,
+  //     cropping: true,
+  //   })
+  //     .then(image => {
+  //       console.log(image);
+  //       setSelectedImage({ uri: image.path });
+  //     })
+  //     .catch(error => {
+  //       console.error(error);
+  //     });
+  // };
 
   const handleImagePicker = () => {
     ImagePicker.openPicker({
@@ -71,7 +91,7 @@ const SignUp: React.FC = () => {
     })
       .then(image => {
         console.log(image);
-        setSelectedImage({ uri: image.path });
+        setFile(image); // Store the whole image object
       })
       .catch(error => {
         console.error(error);
@@ -122,9 +142,20 @@ const SignUp: React.FC = () => {
       formData.append('iND_ReffName', iND_ReffName);
       formData.append('adharNo', adharNo);
       formData.append('nameAsAadhar', nameAsAadhar);
-      if (file) {
-        formData.append('file', file);
-      }
+      // if (file) {
+      //   formData.append('file', file);
+      // }
+
+
+      // if (selectedImage) {
+      //   formData.append('file', {
+      //     uri: file.path,
+      //     type: file.mime,
+      //     name: file.filename || file.path.split('/').pop(),
+      //   });
+      // }
+
+      console.log('formData', formData);
 
       const response = await fetch(
         'http://97.74.95.178:8080/api/NewRegistration',
@@ -158,6 +189,8 @@ const SignUp: React.FC = () => {
       // Handle network error or other exceptions
     }
   };
+
+  
 
   const fetchCities = async stateId => {
     try {
@@ -237,8 +270,6 @@ const SignUp: React.FC = () => {
     setShow(true);
   };
 
-
-
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || dateb;
     setShow(Platform.OS === 'ios');
@@ -268,18 +299,17 @@ const SignUp: React.FC = () => {
     }
   };
 
-  
-
-  // const validateFidFormat = (fid) => {
-  //   // Assuming the FID should be a 16-character alphanumeric string
-  //   const fidPattern = /^[a-zA-Z0-9]{16}$/;
-  //   return fidPattern.test(fid);
-  // };
+  const validateFidFormat = fid => {
+    // Assuming the FID should be a 16-character alphanumeric string
+    const fidPattern = /^[a-zA-Z0-9]{16}$/;
+    return fidPattern.test(fid);
+  };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{flex: 1}}>
+      <Header />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1}}
@@ -289,38 +319,35 @@ const SignUp: React.FC = () => {
             <Text variant="displaySmall" style={styles.loginText}>
               Registration Form
             </Text>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <View style={{ position: 'relative' }}>
-        <Image
-          source={selectedImage || avatarImage}
-          style={{
-            width: 100,
-            height: 100,
-            borderRadius: 50,
-            borderWidth: 2,
-            borderColor: '#000',
-          }}
-        />
-        <TouchableOpacity
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            right: 0,
-            backgroundColor: '#000',
-            borderRadius: 15,
-            padding: 5,
-          }}
-          onPress={handleImagePicker}
-        >
-          <Icon name="pencil" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
-      {/* {!selectedImage && (
-        <Text style={{ marginTop: 10, color: '#888', fontSize: 16 }}>No image selected</Text>
-      )} */}
-    </View>
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <View style={{position: 'relative'}}>
+                <Image
+                  source={file ? {uri: file.path} : avatarImage}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 50,
+                    borderWidth: 2,
+                    borderColor: '#000',
+                  }}
+                />
+                <TouchableOpacity
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: '#000',
+                    borderRadius: 15,
+                    padding: 5,
+                  }}
+                  onPress={handleImagePicker}>
+                  <Icon name="pencil" size={24} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
             <View style={styles.inputContainer}>
-            <View>
+              <View>
                 <Text style={styles.inputLabel}>Full Name</Text>
                 <View style={styles.inputFieldsContainer}>
                   <TextInput
@@ -369,7 +396,6 @@ const SignUp: React.FC = () => {
                   />
                 </View>
               </View>
-            
 
               <View style={styles.inputFieldsContainer}>
                 <Text style={styles.inputLabel}>Contact Number</Text>
@@ -516,26 +542,7 @@ const SignUp: React.FC = () => {
               </View>
 
               <View style={[styles.inputWrapper, {flex: 1}]}>
-                {/* <Text style={styles.inputLabel}>Upload Image</Text> */}
-
-                {/* <View style={styles.fileUploadContainer}>
-                  <Button
-                    style={styles.fileUploadBtn}
-                    // onPress={pickDocument}
-                    contentStyle={{flexDirection: 'row-reverse'}}
-                    icon={({size, color}) => (
-                      <Icon name="upload" size={size} color={color} />
-                    )}
-                    mode="contained-tonal">
-                    Upload
-                  </Button>
-                  <Text>*File supported .pdf</Text>
-                </View> */}
-
-                <View style={styles.selectedFileContainer}>
-                  {/* <Icon name="file" size={26} color={theme.colors.primary} /> */}
-                  {/* <Text>{styles.file.Name}</Text> */}
-                </View>
+                <View style={styles.selectedFileContainer}></View>
               </View>
 
               <Button mode="contained" onPress={handleSubmit}>
@@ -552,113 +559,3 @@ const SignUp: React.FC = () => {
 };
 
 export default SignUp;
-
-// import React from 'react';
-// import { StyleSheet, View, Button } from 'react-native';
-// import { WebView } from 'react-native-webview';
-
-// const HomeScreen = ({ navigation }) => {
-//   return (
-//     <View style={styles.container}>
-//       <WebView
-//         source={{ uri: 'http://church.stealthems.in/Home/RegistrationForm' }}
-//         style={styles.webview}
-//       />
-//       <View style={styles.buttonContainer}>
-//         <Button
-//           title="Go to Login"
-//           onPress={() => navigation.navigate('Login')}
-//         />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   webview: {
-//     flex: 1,
-//   },
-//   buttonContainer: {
-//     // position: 'absolute',
-//     bottom: 20,
-//     // right: 20,
-//     // left: 20,
-//     width:'25%',
-//     alignSelf:'center',
-//     alignItems:'center'
-//   },
-// });
-
-// export default HomeScreen;
-
-
-
-
-
-
-
-
-// import React, { useState } from 'react';
-// import { View, Image, Button, StyleSheet, Text } from 'react-native';
-// import ImagePicker from 'react-native-image-crop-picker';
-
-// const avatarImage = { uri: 'https://www.w3schools.com/howto/img_avatar.png' }; // Replace with the path to your avatar image
-
-// const ImageCropPickerExample = () => {
-//   const [selectedImage, setSelectedImage] = useState(null);
-
-//   const handleImagePicker = () => {
-//     ImagePicker.openPicker({
-//       width: 300,
-//       height: 400,
-//       cropping: true,
-//     })
-//       .then(image => {
-//         console.log(image);
-//         setSelectedImage({ uri: image.path });
-//       })
-//       .catch(error => {
-//         console.error(error);
-//       });
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//        <Image
-//         source={selectedImage || avatarImage}
-//         style={styles.image}
-//       />
-//             {/* {!selectedImage && <Text style={styles.placeholderText}>No image selected</Text>} */}
-//       <Button title="Select Image" onPress={handleImagePicker} />
-     
-
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   image: {
-//     width: 100,
-//     height: 100,
-//     marginTop: 20,
-//     borderRadius: 50,
-//     borderWidth: 2,
-//     borderColor: '#000',
-//   },
-//   placeholderText: {
-//     marginTop: 10,
-//     color: '#888',
-//     fontSize: 16,
-//   },
-// });
-
-// export default ImageCropPickerExample;
-

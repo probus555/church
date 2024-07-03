@@ -39,7 +39,8 @@ const RootNavigator = (props: Props) => {
         />
         <Stack.Screen
           name={screenNames.signup}
-          options={{title: 'Registration'}}
+          options={{headerShown: false}}
+          // options={{title: 'Registration'}}
           component={SignUp}
         />
         <Stack.Screen

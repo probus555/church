@@ -38,7 +38,7 @@ const Profile: React.FC<Props> = ({route}) => {
   const {userDetails} = useProfile(userId);
   const navigation = useNavigation<NavigationActionType>();
   const theme = useAppTheme();
-console.log('userDetails?.photo',userDetails?.photo)
+  console.log('userDetails?.photo', userDetails?.photo);
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -176,32 +176,8 @@ console.log('userDetails?.photo',userDetails?.photo)
                 </Text>
               </View>
             )}
-            {/* <View style={styles.userDetailsWrapper}>
-              <Icon
-                name={
-                  userDetails?.gender?.toUpperCase() === 'MALE'
-                    ? 'gender-male'
-                    : 'gender-female'
-                }
-                size={25}
-                color={theme.colors.tertiary}
-              />
-              <Text style={styles.userDetailText}>{userDetails?.gender}</Text>
-            </View> */}
-            {/* {userDetails?.bloodGroup && (
-              <View style={styles.userDetailsWrapper}>
-                <Icon name="water" size={25} color={theme.colors.tertiary} />
-                <Text style={styles.userDetailText}>
-                  {userDetails?.bloodGroup}
-                </Text>
-              </View>
-            )} */}
+
             <View style={styles.userDetailsWrapper}>
-              {/* <Icon
-                name="calendar-clock"
-                size={25}
-                color={theme.colors.tertiary}
-              /> */}
               <Text style={styles.userDetailText}>
                 {userDetails?.memberSince}
               </Text>
@@ -216,10 +192,3 @@ console.log('userDetails?.photo',userDetails?.photo)
 };
 
 export default Profile;
-
-
-
-
-
-
-

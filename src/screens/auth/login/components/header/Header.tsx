@@ -2,7 +2,6 @@ import React from 'react';
 import {Image, View} from 'react-native';
 import useStyles from './useStyles';
 import LinearGradient from 'react-native-linear-gradient';
-// import images from '../../../../../assets/images';
 import {useAppTheme} from '../../../../../theme';
 import images from '../../../../../asset/images';
 

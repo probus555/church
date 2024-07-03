@@ -21,7 +21,7 @@ const Header: React.FC<StackHeaderProps> = ({navigation, route, options, back}) 
     <View style={styles.container}>
       {back && (
         <Icon
-          name="chevron-left"
+          name="arrow-left-bold"
           color={theme.colors.onPrimary}
           
   

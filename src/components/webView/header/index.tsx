@@ -11,6 +11,7 @@ const images = {
   sunny: require('../../../asset/images/webView/sunny.webp'),
   cloudy: require('../../../asset/images/webView/cloudy.jpg'),
   rainy: require('../../../asset/images/webView/rainy.jpg'),
+  scatterd: require('../../../asset/images/webView/scattered-cloud.jpg'),
   snowy: require('../../../asset/images/webView/cloudy.jpg'),
   defaultBackground: require('../../../asset/images/webView/cloudy.jpg'), // Fallback/default image
   appImages: {
@@ -66,7 +67,7 @@ const Header = (props: Props) => {
 
   useEffect(() => {
     const getWeather = async () => {
-      const data = await fetchWeather('Pune'); // Replace with the desired location
+      const data = await fetchWeather('pune'); // Replace with the desired location
       setWeather(data);
       setBackgroundImage(getBackgroundImage(data));
     };

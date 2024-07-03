@@ -12,7 +12,10 @@ import {
 import {setEmployeeDetails} from '../../../redux/slices/emloyeeSlice';
 import {setSnackMessage} from '../../../redux/slices/snackbarSlice';
 import {useLazyGetUserDetailsQuery} from '../../../redux/services/user/userApiSlice';
-import {useLazyLoginQuery,  useAddFCMMutation,} from '../../../redux/services/auth/login/LoginApiSlice';
+import {
+  useLazyLoginQuery,
+  useAddFCMMutation,
+} from '../../../redux/services/auth/login/LoginApiSlice';
 import initializeMessaging from '../../../common/utils/helper/FCM';
 
 export interface Errors {
@@ -66,50 +69,14 @@ const useLogin = () => {
     try {
       const {permissionGranted, token, error} = await initializeMessaging();
       if (permissionGranted && token) {
-        await addFCMToken({fcmTokens: token})
+        await addFCMToken({fcmTokens: token});
       }
-      console.log('FCMtoke',token)
+      console.log('FCMtoke', token);
     } catch (error) {
       console.error('An error occurred while registering FCM services:', error);
       // You can handle the error here according to your application's logic
     }
   };
-
-  // const handleLogin = async () => {
-  //   const validationErrors = checkValidation(customerData);
-  //   if (validationErrors) {
-  //     setErrors(validationErrors);
-  //   } else {
-  //     try {
-  //       const response = await loginUser(customerData).unwrap();
-  //       console.log('Login API response:', response);
-
-  //       if (!response || !response.data) {
-  //         throw new Error('Invalid API response');
-  //       }
-
-  //       await saveLoginCredintials(customerData);
-  //       await saveEmployeeIdToLocal(response.data.employeeId.toString());
-
-  //       const details = await getUserDetails(
-  //         response.data.employeeId.toString(),
-  //       ).unwrap();
-  //       console.log('User details response:', details);
-  //       dispatch(setEmployeeDetails(details.data));
-  //       navigation.replace(screenNames.myWebView);
-  //       // navigation.navigate('MyWebView');
-  //     } catch (err) {
-  //       let errorMessage = 'An error occurred';
-  //       if (err?.data?.message) {
-  //         errorMessage = err.data.message;
-  //       } else if (err?.error) {
-  //         errorMessage = err.error;
-  //       }
-  //       dispatch(setSnackMessage(errorMessage));
-  //       console.error('Login error', err);
-  //     }
-  //   }
-  // };
 
   const handleLogin = async () => {
     const validationErrors = checkValidation(customerData);
@@ -119,21 +86,23 @@ const useLogin = () => {
       try {
         const response = await loginUser(customerData).unwrap();
         console.log('Login API response:', response);
-  
+
         if (!response || !response.data) {
           throw new Error('Invalid API response');
         }
-  
+
         await saveLoginCredintials(customerData);
         await saveEmployeeIdToLocal(response.data.employeeId.toString());
-  
-        const details = await getUserDetails(response.data.employeeId.toString()).unwrap();
+
+        const details = await getUserDetails(
+          response.data.employeeId.toString(),
+        ).unwrap();
         console.log('User details response:', details);
         dispatch(setEmployeeDetails(details.data));
-  
+
         // Call registerFCMServices after successful login
         await registerFCMServices();
-  
+
         navigation.replace(screenNames.myWebView);
         // navigation.navigate('MyWebView');
       } catch (err) {
@@ -158,11 +127,3 @@ const useLogin = () => {
 };
 
 export default useLogin;
-
-
-
-
-
-
-
-

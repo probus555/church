@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "416457220250",
-    "project_id": "church-81896",
-    "storage_bucket": "church-81896.appspot.com"
+    "project_number": "577571207059",
+    "project_id": "church-f9095",
+    "storage_bucket": "church-f9095.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:416457220250:android:fd4e4046a188b6de2f7f23",
+        "mobilesdk_app_id": "1:577571207059:android:9b24a3519cfe220d3d1a66",
         "android_client_info": {
           "package_name": "com.church"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBa6SftnX4XwSO7ViUtyqoAZFojRacVlaE"
+          "current_key": "AIzaSyCIFEQjk6m37_2h2rKRfm7o0eMNi5Fjivc"
         }
       ],
       "services": {

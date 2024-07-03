@@ -14,7 +14,7 @@ const useStyles = () => {
     loginText: {
       textAlign: 'center',
       marginTop: '20%',
-      fontSize:25,
+      fontSize: 25,
       color: theme.colors.onBackground,
       // fontWeight: '900',
       fontFamily: 'Montserrat-Bold',
@@ -56,14 +56,13 @@ const useStyles = () => {
     inputText: {
       textTransform: 'uppercase',
       // backgroundColor: theme.colors.background,
-      backgroundColor:'#f1f1f1',
+      backgroundColor: '#f1f1f1',
       color: theme.colors.onBackground,
       borderWidth: 0.2,
       borderColor: 'grey',
       borderTopLeftRadius: 0,
       borderTopRightRadius: 0,
-      borderBottomWidth:0,
-      
+      borderBottomWidth: 0,
     },
     inputWrapper: {
       alignItems: 'flex-start',
@@ -83,7 +82,7 @@ const useStyles = () => {
     input: {
       height: 40,
       borderColor: 'gray',
-      
+
       // borderWidth: 1,
       marginBottom: 20,
       paddingLeft: 10,
@@ -95,7 +94,7 @@ const useStyles = () => {
       // marginBottom: 20,
       justifyContent: 'center',
       paddingLeft: 10,
-      backgroundColor:'#f1f1f1',
+      backgroundColor: '#f1f1f1',
     },
     dateText: {
       fontSize: 16,
@@ -112,16 +111,14 @@ const useStyles = () => {
       borderRadius: 10,
     },
     fileUploadContainer: {alignSelf: 'center', alignItems: 'center', gap: 10},
-    fileUploadBtn:{
-    
+    fileUploadBtn: {},
+    selectedFileContainer: {
+      alignItems: 'center',
+      alignSelf: 'center',
     },
     selectedFileContainer: {
       alignItems: 'center',
-      alignSelf:'center'
-    },
-    selectedFileContainer: {
-      alignItems: 'center',
-      alignSelf:'center'
+      alignSelf: 'center',
     },
   });
 
