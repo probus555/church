@@ -12,7 +12,16 @@
           "package_name": "com.church"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "577571207059-t8bmrai63gi07akbeci94kjj4klaki0r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.church",
+            "certificate_hash": "c7868925142ba33847b6965d54b11c5d62f8c909"
+          }
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCIFEQjk6m37_2h2rKRfm7o0eMNi5Fjivc"
