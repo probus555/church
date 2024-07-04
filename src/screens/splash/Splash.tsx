@@ -26,6 +26,7 @@ import {useMMKVObject, useMMKVString} from 'react-native-mmkv';
 const SplashScreen = () => {
   const theme = useAppTheme();
   useSplash();
+  
   const styles = useStyles();
 
   return (

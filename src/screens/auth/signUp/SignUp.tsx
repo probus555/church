@@ -69,7 +69,8 @@ const SignUp: React.FC = () => {
 
   const fetchIpAddress = async () => {
     try {
-      const ip = await DeviceInfo.getIpAddress();
+      const ip = await DeviceInfo.getIpAddressSync();
+      console.log('IpAddress',ip)
       setMacIP(ip);
     } catch (error) {
       console.error('Error fetching IP address:', error);
@@ -147,6 +148,7 @@ const SignUp: React.FC = () => {
           value: church.id,
         }));
         setChurches(mappedChurches);
+        
         console.log(mappedChurches); // Log the mapped list of churches to the console
       } else {
         console.error('Failed to fetch churches');
@@ -204,8 +206,9 @@ const SignUp: React.FC = () => {
         console.error(error);
       });
   };
-
+  console.log('church',churches)
   const handleSubmit = async () => {
+
     try {
       const formData = new FormData();
       formData.append('macID', macID);
@@ -270,14 +273,14 @@ const SignUp: React.FC = () => {
               Registration Form
             </Text>
             <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center',marginTop:15}}>
               <View style={{position: 'relative'}}>
                 <Image
                   source={file ? {uri: file.path} : avatarImage}
                   style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: 50,
+                    width: 125,
+                    height: 125,
+                    borderRadius: 75,
                     borderWidth: 2,
                     borderColor: '#000',
                   }}
@@ -290,6 +293,7 @@ const SignUp: React.FC = () => {
                     backgroundColor: '#000',
                     borderRadius: 15,
                     padding: 5,
+                    
                   }}
                   onPress={handleImagePicker}>
                   <Icon name="pencil" size={24} color="#fff" />
@@ -343,8 +347,9 @@ const SignUp: React.FC = () => {
                     placeholder="Select Church"
                     labelField={'label'}
                     valueField={'value'}
-                  
+           
                   />
+              
                 </View>
               </View>
 
