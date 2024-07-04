@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
 
 // Weather service function
-const fetchWeather = async (location) => {
+const fetchWeather = async location => {
   const API_KEY = '3192dfcf1643de07950bd30f3f729e36'; // Replace with your actual API key
   const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
   try {
-    const response = await fetch(`${BASE_URL}?q=${location}&appid=${API_KEY}&units=metric`);
+    const response = await fetch(
+      `${BASE_URL}?q=${location}&appid=${API_KEY}&units=metric`,
+    );
     const data = await response.json();
     return data;
   } catch (error) {
@@ -15,7 +17,7 @@ const fetchWeather = async (location) => {
 };
 
 // Custom header component
-const CustomHeader = ({ location }) => {
+const CustomHeader = ({location}) => {
   const [weather, setWeather] = useState(null);
 
   useEffect(() => {
@@ -33,7 +35,9 @@ const CustomHeader = ({ location }) => {
       {weather ? (
         <View style={styles.weatherContainer}>
           <Text style={styles.weatherText}>{weather.main.temp}°C</Text>
-          <Text style={styles.weatherText}>{weather.weather[0].description}</Text>
+          <Text style={styles.weatherText}>
+            {weather.weather[0].description}
+          </Text>
         </View>
       ) : (
         <Text style={styles.loadingText}>Loading...</Text>
@@ -84,5 +88,3 @@ const styles = StyleSheet.create({
 });
 
 export default App;
-
-

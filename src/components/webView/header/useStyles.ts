@@ -27,6 +27,13 @@ const useSyles = () => {
       flex: 1,
       alignItems: 'center',
     },
+    // logoutButton: {
+    //   flexDirection: 'row',
+    //   alignItems: 'center',
+    //   paddingVertical: 10,
+    //   paddingHorizontal: 20,
+    // },
+
     rowRightContainer: {
       flexDirection: 'row',
       gap: 10,
@@ -41,7 +48,7 @@ const useSyles = () => {
       color: '#ffffff',
       fontWeight: 'bold',
     },
-    weatherText:{
+    weatherText: {
       fontSize: 16,
       color: '#ffffff',
       fontWeight: 'bold',

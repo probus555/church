@@ -21,7 +21,7 @@ const Header: React.FC = () => {
         onPress={() => navigation.navigate(screenNames.login)}
         size={32}
       />
-      <Text style={styles.headerText}>Registration</Text>
+      {/* <Text style={styles.headerText}>Registration</Text> */}
     </View>
   );
 };

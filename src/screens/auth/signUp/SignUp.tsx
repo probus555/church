@@ -48,14 +48,14 @@ const SignUp: React.FC = () => {
   const [file, setFile] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const avatarImage = { uri: 'path_to_default_avatar_image' };
-
+ 
   const styles = useStyles();
   const navigation = useNavigation<RootStackParamList>();
   const theme = useAppTheme();
 
   useEffect(() => {
     fetchDeviceId();
-    fetchIpAddress();
+    // fetchIpAddress();
   }, []);
 
   const fetchDeviceId = async () => {
@@ -67,15 +67,33 @@ const SignUp: React.FC = () => {
     }
   };
 
-  const fetchIpAddress = async () => {
-    try {
-      const ip = await DeviceInfo.getIpAddressSync();
-      console.log('IpAddress',ip)
-      setMacIP(ip);
-    } catch (error) {
-      console.error('Error fetching IP address:', error);
-    }
-  };
+
+  useEffect(() => {
+    DeviceInfo.getIpAddress()
+      .then((ip) => {
+        console.log('Retrieved IP address:', ip); // Log the IP address
+        setMacIP(ip);  // Update the state with the retrieved IP address
+      })
+      .catch((error) => {
+        console.error('Failed to get IP address:', error); // Handle any errors
+      });
+  }, []);
+
+ 
+
+  // const fetchIpAddress = async () => {
+  //   try {
+  //     const ip = await DeviceInfo.getIpAddressSync();
+  //     console.log('IpAddress',ip)
+  //     setMacIP(ip);
+  //   } catch (error) {
+  //     console.error('Error fetching IP address:', error);
+  //   }
+  // };
+
+
+
+
 
 
 
@@ -170,6 +188,19 @@ const SignUp: React.FC = () => {
       fetchChurches(selectedState.value, city.label);
     }
   };
+
+  // const fetchChurchId = church => {
+  //   setMAS_CHC_FID(mAS_CHC_FID);
+  //   if (mAS_CHC_FID) {
+  //     fetchChurches(selectedState.value, city.label,church.id);
+  //   }
+  // };
+
+
+  const fetchChurchId = church => {
+    setMAS_CHC_FID(church.value);  // Correctly set the selected church ID
+  };
+  
 
   const onDayPress = day => {
     setIND_DOJ(day.dateString);
@@ -347,7 +378,7 @@ const SignUp: React.FC = () => {
                     placeholder="Select Church"
                     labelField={'label'}
                     valueField={'value'}
-           
+                    onChange={fetchChurchId}
                   />
               
                 </View>
