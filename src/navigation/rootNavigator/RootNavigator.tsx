@@ -8,6 +8,7 @@ import Profile from '../../screens/profile';
 import SettingScreen from '../../screens/setting';
 import CreatePostScreen from '../../screens/community/components/createPost';
 import BottomNavigator from '../bottomNavigator';
+import NotificationScreen from '../../screens/notification';
 // import Home from '../../screens/home';
 
 import MyWebView from '../../components/webView';
@@ -43,11 +44,16 @@ const RootNavigator = (props: Props) => {
           // options={{title: 'Registration'}}
           component={SignUp}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name={screenNames.profile}
           options={{headerShown: false}}
           component={Profile}
-        />
+        /> */}
+           <Stack.Screen
+        name={screenNames.profile}
+        options={{title: 'Profile', headerShown: false}}
+        component={Profile}
+      />
         <Stack.Screen
           name={screenNames.settingScreen}
           options={{title: 'Preferences'}}
@@ -62,6 +68,11 @@ const RootNavigator = (props: Props) => {
         name={screenNames.createPost}
         options={{title: 'Create Post'}}
         component={CreatePostScreen}
+      />
+           <Stack.Screen
+        name={screenNames.notificationScreen}
+        options={{title: 'Notifications'}}
+        component={NotificationScreen}
       />
         {/* <Stack.Screen
           name={screenNames.myWebView}

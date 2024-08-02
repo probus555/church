@@ -6,7 +6,7 @@ import Text from '../../../../components/Text';
 import {useAppTheme} from '../../../../theme';
 import {useNavigation} from '@react-navigation/native';
 
-import { screenNames } from '../../../../navigation/rootNavigator/types';
+import {screenNames} from '../../../../navigation/rootNavigator/types';
 
 const Header: React.FC = () => {
   const styles = useStyles();
@@ -21,24 +21,8 @@ const Header: React.FC = () => {
         onPress={() => navigation.navigate(screenNames.login)}
         size={32}
       />
-      {/* <Text style={styles.headerText}>Registration</Text> */}
     </View>
   );
 };
 
 export default Header;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -9,7 +9,7 @@ interface LoginApiArgs {
   password: string;
 }
 
-interface FCMArgs{
+interface FCMArgs {
   fcmTokens:string ;
 }
 

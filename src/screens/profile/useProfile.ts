@@ -11,7 +11,7 @@ const useProfile = (userId: string) => {
   const {employeeDetails} = useAppSelector(state => state.employee);
   const [userDetails, setUserDetails] = useState<UserDetails>();
   const [getUserDetails, userDetailsResult] = useLazyGetUserDetailsQuery();
-console.log('userId',userId)
+  console.log('userId', userId);
   useEffect(() => {
     if (userId) {
       fetchUserDetails();
