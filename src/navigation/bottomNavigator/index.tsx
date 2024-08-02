@@ -227,7 +227,7 @@ export default function MyComponent() {
         }}
       />
 
-<Tab.Screen
+{/* <Tab.Screen
         name="Community"
         component={PostTabs}
         options={{
@@ -236,7 +236,7 @@ export default function MyComponent() {
             return <Icon name="newspaper-variant-multiple" size={size} color={color} />;
           },
         }}
-      />
+      /> */}
 
 
   

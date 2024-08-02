@@ -12,7 +12,11 @@ import {
 import {setEmployeeDetails} from '../../../redux/slices/emloyeeSlice';
 import {setSnackMessage} from '../../../redux/slices/snackbarSlice';
 import {useLazyGetUserDetailsQuery} from '../../../redux/services/user/userApiSlice';
-import {useLazyLoginQuery} from '../../../redux/services/auth/login/LoginApiSlice';
+import {
+  useLazyLoginQuery,
+  useAddFCMMutation,
+} from '../../../redux/services/auth/login/LoginApiSlice';
+import initializeMessaging from '../../../common/utils/helper/FCM';
 
 export interface Errors {
   loginId: string;
@@ -22,6 +26,7 @@ export interface Errors {
 export interface CustomerData extends Errors {}
 
 const useLogin = () => {
+  const [addFCMToken, addFCMTokenResult] = useAddFCMMutation();
   const [loginUser, loginResult] = useLazyLoginQuery();
   const [customerData, setCustomerData] = useState<CustomerData>({
     loginId: '',
@@ -60,6 +65,19 @@ const useLogin = () => {
     setEmployeeID(id);
   };
 
+  const registerFCMServices = async () => {
+    try {
+      const {permissionGranted, token, error} = await initializeMessaging();
+      if (permissionGranted && token) {
+        await addFCMToken({fcmTokens: token});
+      }
+      console.log('FCMtoke', token);
+    } catch (error) {
+      console.error('An error occurred while registering FCM services:', error);
+      // You can handle the error here according to your application's logic
+    }
+  };
+
   const handleLogin = async () => {
     const validationErrors = checkValidation(customerData);
     if (validationErrors) {
@@ -81,6 +99,10 @@ const useLogin = () => {
         ).unwrap();
         console.log('User details response:', details);
         dispatch(setEmployeeDetails(details.data));
+
+        // Call registerFCMServices after successful login
+        await registerFCMServices();
+
         navigation.replace(screenNames.myWebView);
         // navigation.navigate('MyWebView');
       } catch (err) {
@@ -95,7 +117,6 @@ const useLogin = () => {
       }
     }
   };
-
   return {
     customerData,
     updateCustomerData,
@@ -106,11 +127,3 @@ const useLogin = () => {
 };
 
 export default useLogin;
-
-
-
-
-
-
-
-

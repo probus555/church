@@ -1,30 +1,27 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   KeyboardAvoidingView,
   ScrollView,
   View,
   Platform,
   Modal,
-  StyleSheet,
   TouchableOpacity,
+  Image,
+  StyleSheet,
 } from 'react-native';
-import {useAppTheme} from '../../../theme';
+import { useAppTheme } from '../../../theme';
 import useStyles from './useStyles';
-import {Button, Divider, TextInput} from 'react-native-paper';
-import {Text} from '../../../components/Text/Text';
+import { Button, Divider, TextInput } from 'react-native-paper';
+import { Text } from '../../../components/Text/Text';
 import DropdownComponent from '../../../components/dropdown';
-import CalenderModal from '../../../components/calender';
-import {
-  RootStackParamList,
-  screenNames,
-} from '../../../navigation/rootNavigator/types';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Calendar} from 'react-native-calendars';
-import {useNavigation} from '@react-navigation/native';
-import DeviceInfo from 'react-native-device-info';
-import {pickDirectory} from '@react-native-documents/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import PasswordInput from '../../../components/passwordInput/PasswordInput';
+import { RootStackParamList, screenNames } from '../../../navigation/rootNavigator/types';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import DeviceInfo from 'react-native-device-info';
+import Header from './header';
+import ImagePicker from 'react-native-image-crop-picker';
+import axios from 'axios';
 
 const SignUp: React.FC = () => {
   const [date, setDate] = useState('');
@@ -48,113 +45,95 @@ const SignUp: React.FC = () => {
   const [iND_ReffName, setIND_ReffName] = useState('');
   const [adharNo, setAdharNo] = useState('');
   const [nameAsAadhar, setNameAsAadhar] = useState('');
-  const [file, setFile] = useState(null); // File state if needed
-
+  const [file, setFile] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const avatarImage = { uri: 'path_to_default_avatar_image' };
+ 
   const styles = useStyles();
   const navigation = useNavigation<RootStackParamList>();
   const theme = useAppTheme();
 
   useEffect(() => {
     fetchDeviceId();
-    fetchIpAddress();
+    // fetchIpAddress();
   }, []);
 
-  useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await fetch('http://97.74.95.178:8080/api/GetState', {
-          method: 'GET',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-          },
-        });
-        const result = await response.json();
-        if (result.status === 200) {
-          const mappedStates = result.data.map(state => ({
-            label: state.name,
-            value: state.id,
-          }));
-          setStates(mappedStates);
-          console.log(mappedStates); // Log the mapped list of states to the console
-        } else {
-          console.error('Failed to fetch states');
-        }
-      } catch (error) {
-        console.error('Error fetching states:', error);
-      }
-    };
-
-    fetchStates();
-  }, []);
-
-  const handleSubmit = async () => {
+  const fetchDeviceId = async () => {
     try {
-      const formData = new FormData();
-      formData.append('macID', macID);
-      formData.append('macIP', macIP);
-      formData.append('mAS_CHC_FID', mAS_CHC_FID);
-      formData.append('iND_Name', iND_Name);
-      formData.append('iND_Mob', iND_Mob);
-      formData.append('iND_Email', iND_Email);
-      formData.append('iND_Address', iND_Address);
-      formData.append('iND_DOJ', iND_DOJ);
-      formData.append('iND_DOB', iND_DOB);
-      formData.append('iND_ReffName', iND_ReffName);
-      formData.append('adharNo', adharNo);
-      formData.append('nameAsAadhar', nameAsAadhar);
-      if (file) {
-        formData.append('file', file);
-      }
-
-      const response = await fetch(
-        'http://97.74.95.178:8080/api/NewRegistration',
-        {
-          method: 'POST',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formData,
-        },
-      );
-
-      console.log(response);
-
-      const result = await response.json();
-
-      console.log(result);
-
-      if (response.status === 200) {
-        console.log('Registration successful:', result.message);
-        navigation.replace(screenNames.login);
-        // Handle success, e.g., show success message or redirect
-      } else {
-        console.error('Registration failed:', result.message);
-        // Handle error, e.g., show error message to user
-      }
+      const id = DeviceInfo.getDeviceId();
+      setMacID(id);
     } catch (error) {
-      console.error('Error during registration:', error);
-      // Handle network error or other exceptions
+      console.error('Error fetching device ID:', error);
     }
   };
 
+
+  useEffect(() => {
+    DeviceInfo.getIpAddress()
+      .then((ip) => {
+        console.log('Retrieved IP address:', ip); // Log the IP address
+        setMacIP(ip);  // Update the state with the retrieved IP address
+      })
+      .catch((error) => {
+        console.error('Failed to get IP address:', error); // Handle any errors
+      });
+  }, []);
+
+ 
+
+  // const fetchIpAddress = async () => {
+  //   try {
+  //     const ip = await DeviceInfo.getIpAddressSync();
+  //     console.log('IpAddress',ip)
+  //     setMacIP(ip);
+  //   } catch (error) {
+  //     console.error('Error fetching IP address:', error);
+  //   }
+  // };
+
+
+
+
+
+
+
+  const fetchStates = async () => {
+    try {
+      const response = await axios.get('http://97.74.95.178:8080/api/GetState', {
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
+        },
+      });
+      if (response.data.status === 200) {
+        const mappedStates = response.data.data.map(state => ({
+          label: state.name,
+          value: state.id,
+        }));
+        setStates(mappedStates);
+        console.log(mappedStates); // Log the mapped list of states to the console
+      } else {
+        console.error('Failed to fetch states');
+      }
+    } catch (error) {
+      console.error('Error fetching states:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStates();
+  }, []);
+
   const fetchCities = async stateId => {
     try {
-      const response = await fetch(
-        `http://97.74.95.178:8080/api/GetCity?StateId=${stateId}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-          },
+      const response = await axios.get(`http://97.74.95.178:8080/api/GetCity?StateId=${stateId}`, {
+        headers: {
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
         },
-      );
-      const result = await response.json();
-      if (result.status === 200) {
-        const mappedCities = result.data.map(city => ({
+      });
+      if (response.data.status === 200) {
+        const mappedCities = response.data.data.map(city => ({
           label: city.name,
           value: city.id,
         }));
@@ -187,6 +166,7 @@ const SignUp: React.FC = () => {
           value: church.id,
         }));
         setChurches(mappedChurches);
+        
         console.log(mappedChurches); // Log the mapped list of churches to the console
       } else {
         console.error('Failed to fetch churches');
@@ -195,6 +175,7 @@ const SignUp: React.FC = () => {
       console.error('Error fetching churches:', error);
     }
   };
+
 
   const onStateChange = state => {
     setSelectedState(state);
@@ -207,6 +188,19 @@ const SignUp: React.FC = () => {
       fetchChurches(selectedState.value, city.label);
     }
   };
+
+  // const fetchChurchId = church => {
+  //   setMAS_CHC_FID(mAS_CHC_FID);
+  //   if (mAS_CHC_FID) {
+  //     fetchChurches(selectedState.value, city.label,church.id);
+  //   }
+  // };
+
+
+  const fetchChurchId = church => {
+    setMAS_CHC_FID(church.value);  // Correctly set the selected church ID
+  };
+  
 
   const onDayPress = day => {
     setIND_DOJ(day.dateString);
@@ -229,36 +223,77 @@ const SignUp: React.FC = () => {
     setIND_DOB(formattedDate);
   };
 
-  const fetchDeviceId = async () => {
+  const handleImagePicker = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setFile(image); // Store the whole image object
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+  console.log('church',churches)
+  const handleSubmit = async () => {
+
     try {
-      const id = DeviceInfo.getDeviceId();
-      setMacID(id);
+      const formData = new FormData();
+      formData.append('macID', macID);
+      formData.append('macIP', macIP);
+      formData.append('mAS_CHC_FID', mAS_CHC_FID);
+      formData.append('iND_Name', iND_Name);
+      formData.append('iND_Mob', iND_Mob);
+      formData.append('iND_Email', iND_Email);
+      formData.append('iND_Address', iND_Address);
+      formData.append('iND_DOJ', iND_DOJ);
+      formData.append('iND_DOB', iND_DOB);
+      formData.append('iND_ReffName', iND_ReffName);
+      formData.append('adharNo', adharNo);
+      formData.append('nameAsAadhar', nameAsAadhar);
+      if (file) {
+        formData.append('file', {
+          uri: file.path,
+          name: 'image.jpg', // You can change the name and extension based on your needs
+          type: file.mime,
+        });
+      }
+  
+      // Log the formData before sending
+      console.log('FormData:', formData);
+  
+      const response = await axios.post('http://97.74.95.178:8080/api/NewRegistration', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
+        },
+      });
+  
+      if (response.data.status === 200) {
+        alert('Data submitted successfully');
+        navigation.replace(screenNames.login);
+        console.log('Success:', response.data);
+      } else {
+        alert('Error submitting data');
+        console.log('Failure:', response.data);
+      }
     } catch (error) {
-      console.error('Error fetching device ID:', error);
+      console.error('Error submitting data:', error);
     }
   };
 
-  const fetchIpAddress = async () => {
-    try {
-      const ip = await DeviceInfo.getIpAddress();
-      setMacIP(ip);
-    } catch (error) {
-      console.error('Error fetching IP address:', error);
-    }
-  };
 
   
-
-  // const validateFidFormat = (fid) => {
-  //   // Assuming the FID should be a 16-character alphanumeric string
-  //   const fidPattern = /^[a-zA-Z0-9]{16}$/;
-  //   return fidPattern.test(fid);
-  // };
+  
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{flex: 1}}>
+      <Header />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1}}
@@ -268,10 +303,36 @@ const SignUp: React.FC = () => {
             <Text variant="displaySmall" style={styles.loginText}>
               Registration Form
             </Text>
-
-          
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center',marginTop:15}}>
+              <View style={{position: 'relative'}}>
+                <Image
+                  source={file ? {uri: file.path} : avatarImage}
+                  style={{
+                    width: 125,
+                    height: 125,
+                    borderRadius: 75,
+                    borderWidth: 2,
+                    borderColor: '#000',
+                  }}
+                />
+                <TouchableOpacity
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: '#000',
+                    borderRadius: 15,
+                    padding: 5,
+                    
+                  }}
+                  onPress={handleImagePicker}>
+                  <Icon name="pencil" size={24} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
             <View style={styles.inputContainer}>
-            <View>
+              <View>
                 <Text style={styles.inputLabel}>Full Name</Text>
                 <View style={styles.inputFieldsContainer}>
                   <TextInput
@@ -317,10 +378,11 @@ const SignUp: React.FC = () => {
                     placeholder="Select Church"
                     labelField={'label'}
                     valueField={'value'}
+                    onChange={fetchChurchId}
                   />
+              
                 </View>
               </View>
-            
 
               <View style={styles.inputFieldsContainer}>
                 <Text style={styles.inputLabel}>Contact Number</Text>
@@ -467,26 +529,7 @@ const SignUp: React.FC = () => {
               </View>
 
               <View style={[styles.inputWrapper, {flex: 1}]}>
-                {/* <Text style={styles.inputLabel}>Upload Image</Text> */}
-
-                {/* <View style={styles.fileUploadContainer}>
-                  <Button
-                    style={styles.fileUploadBtn}
-                    // onPress={pickDocument}
-                    contentStyle={{flexDirection: 'row-reverse'}}
-                    icon={({size, color}) => (
-                      <Icon name="upload" size={size} color={color} />
-                    )}
-                    mode="contained-tonal">
-                    Upload
-                  </Button>
-                  <Text>*File supported .pdf</Text>
-                </View> */}
-
-                <View style={styles.selectedFileContainer}>
-                  {/* <Icon name="file" size={26} color={theme.colors.primary} /> */}
-                  {/* <Text>{styles.file.Name}</Text> */}
-                </View>
+                <View style={styles.selectedFileContainer}></View>
               </View>
 
               <Button mode="contained" onPress={handleSubmit}>
@@ -504,43 +547,3 @@ const SignUp: React.FC = () => {
 
 export default SignUp;
 
-// import React from 'react';
-// import { StyleSheet, View, Button } from 'react-native';
-// import { WebView } from 'react-native-webview';
-
-// const HomeScreen = ({ navigation }) => {
-//   return (
-//     <View style={styles.container}>
-//       <WebView
-//         source={{ uri: 'http://church.stealthems.in/Home/RegistrationForm' }}
-//         style={styles.webview}
-//       />
-//       <View style={styles.buttonContainer}>
-//         <Button
-//           title="Go to Login"
-//           onPress={() => navigation.navigate('Login')}
-//         />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   webview: {
-//     flex: 1,
-//   },
-//   buttonContainer: {
-//     // position: 'absolute',
-//     bottom: 20,
-//     // right: 20,
-//     // left: 20,
-//     width:'25%',
-//     alignSelf:'center',
-//     alignItems:'center'
-//   },
-// });
-
-// export default HomeScreen;

@@ -3,7 +3,8 @@ import { SafeAreaView, StyleSheet, Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import autoLoginUtil from '../../components/webView/helper';
-import Header from './components/header';
+import Header from './header';
+import HeaderSecond from './headerSecond';
 
 const AutoLoginWebView = () => {
   const webViewRef = useRef(null);
