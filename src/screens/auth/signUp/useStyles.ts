@@ -72,7 +72,7 @@ const useStyles = () => {
     inputLabel: {
       fontSize: fontStyles.size.font14,
       fontFamily: 'Montserrat-Bold',
-
+  
       // fontWeight: fontStyles.weight.medium,
     },
     title: {

@@ -8,8 +8,7 @@ const appImages = {
   rainyWeather:require('./home/rainyWeather.jpg'),
   announcements:require('./common/announcements.png'),
   noProfile:require("./profile/no-profile.png"),
-  noData:require('./common/no_data.png'),
-  signUp:require('./common/no_data.png')
+  noData:require('./common/no_data.png')
 };
 
 export default {appImages};

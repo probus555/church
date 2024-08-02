@@ -8,7 +8,6 @@ interface UserDetails {
   birthDate: string;
   churchName: string;
   photo: string;
-  role:string;
   // Add other fields as per your API response
 }
 

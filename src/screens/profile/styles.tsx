@@ -8,8 +8,7 @@ const useStyles = () => {
   return StyleSheet.create({
     container: {
       flex: 1,
-
-      backgroundColor: 'red',
+      backgroundColor: theme.colors.background,
     },
     profileBackgroundContainer: {
       padding: 20,
@@ -65,7 +64,6 @@ const useStyles = () => {
       padding: 50,
       backgroundColor: theme.colors.background,
       gap: 30,
-      height: 500,
     },
     userDetailsWrapper: {
       backgroundColor: theme.colors.background,

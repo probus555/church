@@ -16,7 +16,7 @@ const Notices = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
   useEffect(() => {
-    setCurrentPage(1); 
+    setCurrentPage(1); // Reset current page when component mounts
   }, []);
   const handleRefresh = () => {
     setIsRefreshing(true);
@@ -66,15 +66,9 @@ const Notices = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // padding: 20,
     backgroundColor: '#f0f0f0',
   },
 });
 
 export default Notices;
-
-
-
-
-
-
-    // android:networkSecurityConfig="@xml/network_security_config"

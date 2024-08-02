@@ -54,11 +54,19 @@ const Profile: React.FC<Props> = ({route}) => {
             />
             <View style={styles.iconContainer}>
               <Icon
-                name="cog-outline"
+                name="bell"
                 size={22}
-                color={'#ffffff'}
-                onPress={() => navigation.navigate(screenNames.settingScreen)}
+                color={theme.colors.background}
+                style={{marginRight: 5}}
               />
+              {!userId && (
+                <Icon
+                  name="cog-outline"
+                  size={22}
+                  color={'#ffffff'}
+                  onPress={() => navigation.navigate(screenNames.settingScreen)}
+                />
+              )}
             </View>
           </View>
 
@@ -127,6 +135,15 @@ const Profile: React.FC<Props> = ({route}) => {
         </LinearGradient>
         {userDetails ? (
           <View style={styles.userDetailContainer}>
+            {/* <View style={styles.userDetailsWrapper}>
+              <Icon
+                name="card-account-details"
+                size={25}
+                color={theme.colors.tertiary}
+              />
+              <Text style={styles.userDetailText}>{userDetails?.id}</Text>
+            </View> */}
+
             <View style={styles.userDetailsWrapper}>
               <Icon
                 name="calendar-month"
@@ -159,6 +176,12 @@ const Profile: React.FC<Props> = ({route}) => {
                 </Text>
               </View>
             )}
+
+            <View style={styles.userDetailsWrapper}>
+              <Text style={styles.userDetailText}>
+                {userDetails?.memberSince}
+              </Text>
+            </View>
           </View>
         ) : (
           <></>

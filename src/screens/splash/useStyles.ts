@@ -13,6 +13,10 @@ const useStyles = () => {
       fontWeight: 'bold',
     },
     image: {
+      // height: '100%',
+      // width: '100%',
+      // position:'absolute',
+
       height: 225,
       width: 225,
     },

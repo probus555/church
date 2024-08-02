@@ -1,10 +1,7 @@
 import {StyleSheet} from 'react-native';
 import Metrics from '../../../theme/metrics/screen';
-import theme from '../../../theme';
-import { useAppTheme } from '../../../theme';
 
 const useSyles = () => {
-  const theme = useAppTheme();
   return StyleSheet.create({
     scrollContainer: {
       flex: 1,
@@ -74,35 +71,6 @@ const useSyles = () => {
       flex: 1,
       alignSelf: 'center',
     },
-    bellIconContainer: {
-      position: 'relative',
-    },
-    notificationText: {
-      color: 'white',
-      fontSize: 10,
-      fontWeight: 'bold',
-    },
-    notificationBadge: {
-      position: 'absolute',
-      top: -5,
-      right: -10,
-      minWidth: 16,
-      height: 16,
-      borderRadius: 8,
-      backgroundColor: theme.colors.primary,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 3,
-    },
   });
 };
 export default useSyles;
-
-
-
-
-
-
-
-
-
