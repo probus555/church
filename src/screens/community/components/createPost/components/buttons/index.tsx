@@ -166,23 +166,17 @@ const CreatePostButton = () => {
   };
   return (
     <View style={styles.container}>
+   
+
       <AnimatedPressable
         onPress={() => handleActionButtonPress('Notice')}
-        style={[styles.contentContainer, thirdIcon, thirdWidthStyle]}>
+        style={[styles.contentContainer, secondIcon, secondWidthStyle]}>
         <View style={styles.iconContainer}>
-          <Feather name="bell" size={26} color="white" />
+        <Feather name="bell" size={26} color="white" />
         </View>
         <Animated.Text style={[styles.text, opacityText]}>Notice</Animated.Text>
       </AnimatedPressable>
-
-      <AnimatedPressable
-        onPress={() => handleActionButtonPress('News')}
-        style={[styles.contentContainer, secondIcon, secondWidthStyle]}>
-        <View style={styles.iconContainer}>
-          <Feather name="book" size={26} color="white" />
-        </View>
-        <Animated.Text style={[styles.text, opacityText]}>News</Animated.Text>
-      </AnimatedPressable>
+   
 
       <AnimatedPressable
         onPress={() => handleActionButtonPress('Event')}
@@ -221,6 +215,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     overflow: 'hidden',
+   
   },
   iconContainer: {
     width: 60,

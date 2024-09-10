@@ -9,4 +9,8 @@ interface LoginApiArgs {
   password: string;
 }
 
-export type {LoginResponse, LoginApiArgs};
+interface FCMArgs {
+  fcmTokens:string ;
+}
+
+export type {LoginResponse, LoginApiArgs,FCMArgs};

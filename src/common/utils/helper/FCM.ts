@@ -23,7 +23,6 @@ const initializeMessaging = async (): Promise<{
 }> => {
   try {
     await registerAppWithFCM();
-    await requestUserPermission();
     const permissionStatus = await checkPermission();
     const deviceToken = await getToken();
     return {

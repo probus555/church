@@ -5,26 +5,29 @@ import {
   View,
   Platform,
   Modal,
-  StyleSheet,
   TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
 } from 'react-native';
 import {useAppTheme} from '../../../theme';
 import useStyles from './useStyles';
 import {Button, Divider, TextInput} from 'react-native-paper';
 import {Text} from '../../../components/Text/Text';
 import DropdownComponent from '../../../components/dropdown';
-import CalenderModal from '../../../components/calender';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   RootStackParamList,
   screenNames,
 } from '../../../navigation/rootNavigator/types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Calendar} from 'react-native-calendars';
 import {useNavigation} from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
-import {pickDirectory} from '@react-native-documents/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import PasswordInput from '../../../components/passwordInput/PasswordInput';
+import Header from './header';
+import ImagePicker from 'react-native-image-crop-picker';
+import images from '../../../asset/images';
+import axios from 'axios';
+import {Picker} from '@react-native-picker/picker';
 
 const SignUp: React.FC = () => {
   const [date, setDate] = useState('');
@@ -48,7 +51,10 @@ const SignUp: React.FC = () => {
   const [iND_ReffName, setIND_ReffName] = useState('');
   const [adharNo, setAdharNo] = useState('');
   const [nameAsAadhar, setNameAsAadhar] = useState('');
-  const [file, setFile] = useState(null); // File state if needed
+  const [Gender, setGender] = useState('');
+  const [file, setFile] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const avatarImage = {uri: 'path_to_default_avatar_image'};
 
   const styles = useStyles();
   const navigation = useNavigation<RootStackParamList>();
@@ -56,105 +62,148 @@ const SignUp: React.FC = () => {
 
   useEffect(() => {
     fetchDeviceId();
-    fetchIpAddress();
+    // fetchIpAddress();
   }, []);
 
-  useEffect(() => {
-    const fetchStates = async () => {
-      try {
-        const response = await fetch('http://97.74.95.178:8080/api/GetState', {
-          method: 'GET',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-          },
-        });
-        const result = await response.json();
-        if (result.status === 200) {
-          const mappedStates = result.data.map(state => ({
-            label: state.name,
-            value: state.id,
-          }));
-          setStates(mappedStates);
-          console.log(mappedStates); // Log the mapped list of states to the console
-        } else {
-          console.error('Failed to fetch states');
-        }
-      } catch (error) {
-        console.error('Error fetching states:', error);
-      }
-    };
-
-    fetchStates();
-  }, []);
-
-  const handleSubmit = async () => {
+  const fetchDeviceId = async () => {
     try {
-      const formData = new FormData();
-      formData.append('macID', macID);
-      formData.append('macIP', macIP);
-      formData.append('mAS_CHC_FID', mAS_CHC_FID);
-      formData.append('iND_Name', iND_Name);
-      formData.append('iND_Mob', iND_Mob);
-      formData.append('iND_Email', iND_Email);
-      formData.append('iND_Address', iND_Address);
-      formData.append('iND_DOJ', iND_DOJ);
-      formData.append('iND_DOB', iND_DOB);
-      formData.append('iND_ReffName', iND_ReffName);
-      formData.append('adharNo', adharNo);
-      formData.append('nameAsAadhar', nameAsAadhar);
-      if (file) {
-        formData.append('file', file);
-      }
-
-      const response = await fetch(
-        'http://97.74.95.178:8080/api/NewRegistration',
-        {
-          method: 'POST',
-          headers: {
-            Authorization:
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formData,
-        },
-      );
-
-      console.log(response);
-
-      const result = await response.json();
-
-      console.log(result);
-
-      if (response.status === 200) {
-        console.log('Registration successful:', result.message);
-        navigation.replace(screenNames.login);
-        // Handle success, e.g., show success message or redirect
-      } else {
-        console.error('Registration failed:', result.message);
-        // Handle error, e.g., show error message to user
-      }
+      const id = DeviceInfo.getDeviceId();
+      setMacID(id);
     } catch (error) {
-      console.error('Error during registration:', error);
-      // Handle network error or other exceptions
+      console.error('Error fetching device ID:', error);
     }
   };
 
-  const fetchCities = async stateId => {
+  useEffect(() => {
+    DeviceInfo.getIpAddress()
+      .then(ip => {
+        console.log('Retrieved IP address:', ip); // Log the IP address
+        setMacIP(ip); // Update the state with the retrieved IP address
+      })
+      .catch(error => {
+        console.error('Failed to get IP address:', error); // Handle any errors
+      });
+  }, []);
+
+  const validateForm = () => {
+    if (!iND_Name.trim()) {
+      Alert.alert('Validation Error', 'Full Name is required');
+      return false;
+    }
+
+    if (!iND_Mob.trim()) {
+      Alert.alert('Validation Error', 'Contact Number is required');
+      return false;
+    }
+
+    // Check for valid international phone number format
+    const internationalPhoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (!internationalPhoneRegex.test(iND_Mob)) {
+      Alert.alert('Validation Error', 'Invalid Contact Number');
+      return false;
+    }
+
+    if (!iND_Email.trim()) {
+      Alert.alert('Validation Error', 'Email is required');
+      return false;
+    }
+
+    // Check for valid email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(iND_Email)) {
+      Alert.alert('Validation Error', 'Invalid Email Address');
+      return false;
+    }
+
+    if (!iND_Address.trim()) {
+      Alert.alert('Validation Error', 'Address is required');
+      return false;
+    }
+
+    if (!iND_DOB.trim()) {
+      Alert.alert('Validation Error', 'Date Of Birth is required');
+      return false;
+    }
+
+    const today = new Date();
+    const birthDate = new Date(iND_DOB);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    if (
+      monthDifference < 0 ||
+      (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    if (age < 18) {
+      Alert.alert('Validation Error', 'You must be at least 18 years old');
+      return false;
+    }
+
+    if (!Gender.trim()) {
+      Alert.alert('Validation Error', 'Gender is required');
+      return false;
+    }
+
+    if (!adharNo.trim()) {
+      Alert.alert('Validation Error', 'Aadhaar Number is required');
+      return false;
+    }
+
+    // Check for valid Aadhaar number format (12-digit number)
+    const aadhaarRegex = /^\d{12}$/;
+    if (!aadhaarRegex.test(adharNo)) {
+      Alert.alert('Validation Error', 'Invalid Aadhaar Number');
+      return false;
+    }
+
+    return true;
+  };
+
+  const fetchStates = async () => {
     try {
-      const response = await fetch(
-        `http://97.74.95.178:8080/api/GetCity?StateId=${stateId}`,
+      const response = await axios.get(
+        'http://49.248.250.54:8081/api/GetState',
         {
-          method: 'GET',
           headers: {
             Authorization:
               'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
           },
         },
       );
-      const result = await response.json();
-      if (result.status === 200) {
-        const mappedCities = result.data.map(city => ({
+      if (response.data.status === 200) {
+        const mappedStates = response.data.data.map(state => ({
+          label: state.name,
+          value: state.id,
+        }));
+        setStates(mappedStates);
+        console.log(mappedStates); // Log the mapped list of states to the console
+      } else {
+        console.error('Failed to fetch states');
+      }
+    } catch (error) {
+      console.error('Error fetching states:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStates();
+  }, []);
+
+  const fetchCities = async stateId => {
+    try {
+      const response = await axios.get(
+        `http://49.248.250.54:8081/api/GetCity?StateId=${stateId}`,
+        {
+          headers: {
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
+          },
+        },
+      );
+      if (response.data.status === 200) {
+        const mappedCities = response.data.data.map(city => ({
           label: city.name,
           value: city.id,
         }));
@@ -171,7 +220,7 @@ const SignUp: React.FC = () => {
   const fetchChurches = async (stateId, cityName) => {
     try {
       const response = await fetch(
-        `http://97.74.95.178:8080/api/GetChurch?StateId=${stateId}&MasCityName=${cityName}`,
+        `http://49.248.250.54:8081/api/GetChurch?StateId=${stateId}&MasCityName=${cityName}`,
         {
           method: 'GET',
           headers: {
@@ -187,6 +236,7 @@ const SignUp: React.FC = () => {
           value: church.id,
         }));
         setChurches(mappedChurches);
+
         console.log(mappedChurches); // Log the mapped list of churches to the console
       } else {
         console.error('Failed to fetch churches');
@@ -206,6 +256,17 @@ const SignUp: React.FC = () => {
     if (selectedState) {
       fetchChurches(selectedState.value, city.label);
     }
+  };
+
+  // const fetchChurchId = church => {
+  //   setMAS_CHC_FID(mAS_CHC_FID);
+  //   if (mAS_CHC_FID) {
+  //     fetchChurches(selectedState.value, city.label,church.id);
+  //   }
+  // };
+
+  const fetchChurchId = church => {
+    setMAS_CHC_FID(church.value); // Correctly set the selected church ID
   };
 
   const onDayPress = day => {
@@ -229,36 +290,90 @@ const SignUp: React.FC = () => {
     setIND_DOB(formattedDate);
   };
 
-  const fetchDeviceId = async () => {
-    try {
-      const id = DeviceInfo.getDeviceId();
-      setMacID(id);
-    } catch (error) {
-      console.error('Error fetching device ID:', error);
-    }
+  const handleImagePicker = () => {
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setFile(image); // Store the whole image object
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
+  console.log('church', churches);
 
-  const fetchIpAddress = async () => {
-    try {
-      const ip = await DeviceInfo.getIpAddress();
-      setMacIP(ip);
-    } catch (error) {
-      console.error('Error fetching IP address:', error);
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      try {
+        const formData = new FormData();
+        formData.append('macID', macID);
+        formData.append('macIP', macIP);
+        formData.append('mAS_CHC_FID', mAS_CHC_FID);
+        formData.append('iND_Name', iND_Name);
+        formData.append('iND_Mob', iND_Mob);
+        formData.append('iND_Email', iND_Email);
+        formData.append('iND_Address', iND_Address);
+        formData.append('iND_DOJ', iND_DOJ);
+        formData.append('iND_DOB', iND_DOB);
+        formData.append('iND_ReffName', iND_ReffName);
+        formData.append('adharNo', adharNo);
+        formData.append('Gender', Gender);
+
+        formData.append('nameAsAadhar', nameAsAadhar);
+        if (file) {
+          formData.append('file', {
+            uri: file.path,
+            name: 'image.jpg', // You can change the name and extension based on your needs
+            type: file.mime,
+          });
+        }
+
+        // Log the formData before sending
+        console.log('FormData:', formData);
+
+        const response = await axios.post(
+          'http://49.248.250.54:8081/api/NewRegistration',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization:
+                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk5ODUzMTksImlzcyI6Imh0dHA6Ly9DaHVyY2guY29tIiwiYXVkIjoiaHR0cDovL0NodXJjaC5jb20ifQ.iJMILNigyJTfdp5LxKyMdcw8oHbUw3DqyMt5UJx0EjA',
+            },
+          },
+        );
+
+        if (response.data.status === 200) {
+          alert('Data submitted successfully');
+          navigation.replace(screenNames.login);
+          console.log('Success:', response.data);
+        } else {
+          alert('Error submitting data');
+          console.log('Failure:', response.data);
+        }
+      } catch (error) {
+        console.error('Error submitting data:', error);
+      }
     }
   };
 
   
 
-  // const validateFidFormat = (fid) => {
-  //   // Assuming the FID should be a 16-character alphanumeric string
-  //   const fidPattern = /^[a-zA-Z0-9]{16}$/;
-  //   return fidPattern.test(fid);
-  // };
+  const images = {
+    appImages: {
+      signup: require('../../../asset/images/signUp/no-profile.png'), // Adjust the path to your image
+    },
+  };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={{flex: 1}}>
+      <Header />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1}}
@@ -268,10 +383,45 @@ const SignUp: React.FC = () => {
             <Text variant="displaySmall" style={styles.loginText}>
               Registration Form
             </Text>
-
-          
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: 15,
+              }}>
+              <View style={{position: 'relative'}}>
+                <Image
+                  source={
+                    file && file.path
+                      ? {uri: file.path}
+                      : images.appImages.signup
+                  }
+                  // source={file ? {uri: file.path} : avatarImage}
+                  style={{
+                    width: 125,
+                    height: 125,
+                    borderRadius: 75,
+                    // borderWidth: 2,
+                    borderColor: '#000',
+                  }}
+                />
+                <TouchableOpacity
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: '#000',
+                    borderRadius: 15,
+                    padding: 5,
+                  }}
+                  onPress={handleImagePicker}>
+                  <Icon name="pencil" size={24} color="#fff" />
+                </TouchableOpacity>
+              </View>
+            </View>
             <View style={styles.inputContainer}>
-            <View>
+              <View>
                 <Text style={styles.inputLabel}>Full Name</Text>
                 <View style={styles.inputFieldsContainer}>
                   <TextInput
@@ -279,7 +429,7 @@ const SignUp: React.FC = () => {
                     style={styles.inputText}
                     placeholder="Full Name"
                     outlineColor={theme.colors.outline}
-                    autoCapitalize="characters"
+                    // autoCapitalize="characters"
                     value={iND_Name}
                     onChangeText={text => setIND_Name(text)}
                   />
@@ -294,6 +444,7 @@ const SignUp: React.FC = () => {
                     labelField={'label'}
                     valueField={'value'}
                     onChange={onStateChange}
+                    search
                   />
                 </View>
               </View>
@@ -306,6 +457,7 @@ const SignUp: React.FC = () => {
                     labelField={'label'}
                     valueField={'value'}
                     onChange={onCityChange}
+                    search
                   />
                 </View>
               </View>
@@ -317,19 +469,23 @@ const SignUp: React.FC = () => {
                     placeholder="Select Church"
                     labelField={'label'}
                     valueField={'value'}
+                    onChange={fetchChurchId}
+                    search
                   />
                 </View>
               </View>
-            
 
               <View style={styles.inputFieldsContainer}>
                 <Text style={styles.inputLabel}>Contact Number</Text>
                 <TextInput
                   mode="flat"
                   style={styles.inputText}
+                  keyboardType="numeric"
+                  inputMode="numeric"
                   placeholder="999-555-5544"
+                  maxLength={10}
                   outlineColor={theme.colors.outline}
-                  autoCapitalize="characters"
+                  // autoCapitalize="characters"
                   value={iND_Mob}
                   onChangeText={text => setIND_Mob(text)}
                 />
@@ -367,6 +523,27 @@ const SignUp: React.FC = () => {
                 )}
               </View>
 
+              <View>
+                <Text style={styles.inputLabel}>Gender</Text>
+                <View
+                  style={{
+                    gap: 5,
+                    backgroundColor: '#f1f1f1',
+                    color: theme.colors.onBackground,
+                    borderWidth: 0.2,
+                  }}>
+                  <Picker
+                    selectedValue={Gender}
+                    style={{height: 50, width: '100%', color: 'black'}}
+                    onValueChange={itemValue => setGender(itemValue)}>
+                    <Picker.Item label="Select Gender" value="" />
+                    <Picker.Item label="Male" value="male" />
+                    <Picker.Item label="Female" value="female" />
+                    <Picker.Item label="Other" value="other" />
+                  </Picker>
+                </View>
+              </View>
+
               <View style={styles.inputFieldsContainer}>
                 <Text style={styles.inputLabel}>Email Id</Text>
                 <TextInput
@@ -374,7 +551,7 @@ const SignUp: React.FC = () => {
                   style={styles.inputText}
                   placeholder="Enter Emai ID"
                   outlineColor={theme.colors.outline}
-                  autoCapitalize="characters"
+                  // autoCapitalize="characters"
                   value={iND_Email}
                   onChangeText={text => setIND_Email(text)}
                 />
@@ -384,9 +561,11 @@ const SignUp: React.FC = () => {
                 <TextInput
                   mode="flat"
                   style={styles.inputText}
-                  placeholder="Enter-Address"
+                  placeholder="Adhar Number"
+                  maxLength={12}
                   outlineColor={theme.colors.outline}
-                  autoCapitalize="characters"
+                  keyboardType="numeric"
+                  inputMode="numeric"
                   value={adharNo}
                   onChangeText={text => setAdharNo(text)}
                 />
@@ -396,49 +575,15 @@ const SignUp: React.FC = () => {
                 <Text style={styles.inputLabel}>Name As Per Adhar</Text>
                 <TextInput
                   mode="flat"
+                  maxLength={50}
                   style={styles.inputText}
                   placeholder="Name as Per Adhar"
                   outlineColor={theme.colors.outline}
-                  autoCapitalize="characters"
+                  // autoCapitalize="characters"
                   value={nameAsAadhar}
                   onChangeText={text => setNameAsAadhar(text)}
                 />
               </View>
-
-              {/* <View style={styles.inputFieldsContainer}>
-                <Text style={styles.inputLabel}>Registration Date</Text>
-                <TouchableOpacity
-                  style={styles.dateInput}
-                  onPress={() => setShowCalendar(true)}>
-                  <Text style={{marginLeft: 5}}>
-                    {date ? date : 'YYYY-MM-DD'}
-                  </Text>
-                </TouchableOpacity>
-
-                <Modal
-                  visible={showCalendar}
-                  transparent={true}
-                  animationType="slide">
-                  <View style={styles.modalBackground}>
-                    <View style={styles.calendarContainer}>
-                      <Calendar
-                        onDayPress={onDayPress}
-                        markedDates={{
-                          [iND_DOJ]: {
-                            selected: true,
-                            marked: true,
-                            selectedColor: 'blue',
-                          },
-                        }}
-                      />
-                      <Button
-                        title="Close"
-                        onPress={() => setShowCalendar(false)}
-                      />
-                    </View>
-                  </View>
-                </Modal>
-              </View> */}
 
               <View style={styles.inputFieldsContainer}>
                 <Text style={styles.inputLabel}>Address</Text>
@@ -447,53 +592,19 @@ const SignUp: React.FC = () => {
                   style={styles.inputText}
                   placeholder="Address"
                   outlineColor={theme.colors.outline}
-                  autoCapitalize="characters"
+                  // autoCapitalize="characters"
                   value={iND_Address}
                   onChangeText={text => setIND_Address(text)}
                 />
               </View>
 
-              <View style={styles.inputFieldsContainer}>
-                <Text style={styles.inputLabel}>Reference Name</Text>
-                <TextInput
-                  mode="flat"
-                  style={styles.inputText}
-                  placeholder="Reference Name"
-                  outlineColor={theme.colors.outline}
-                  autoCapitalize="characters"
-                  value={iND_ReffName}
-                  onChangeText={text => setIND_ReffName(text)}
-                />
-              </View>
-
               <View style={[styles.inputWrapper, {flex: 1}]}>
-                {/* <Text style={styles.inputLabel}>Upload Image</Text> */}
-
-                {/* <View style={styles.fileUploadContainer}>
-                  <Button
-                    style={styles.fileUploadBtn}
-                    // onPress={pickDocument}
-                    contentStyle={{flexDirection: 'row-reverse'}}
-                    icon={({size, color}) => (
-                      <Icon name="upload" size={size} color={color} />
-                    )}
-                    mode="contained-tonal">
-                    Upload
-                  </Button>
-                  <Text>*File supported .pdf</Text>
-                </View> */}
-
-                <View style={styles.selectedFileContainer}>
-                  {/* <Icon name="file" size={26} color={theme.colors.primary} /> */}
-                  {/* <Text>{styles.file.Name}</Text> */}
-                </View>
+                <View style={styles.selectedFileContainer}></View>
               </View>
 
               <Button mode="contained" onPress={handleSubmit}>
-                CREATE
+                REGISTER
               </Button>
-
-              <Divider />
             </View>
           </View>
         </View>
@@ -503,44 +614,3 @@ const SignUp: React.FC = () => {
 };
 
 export default SignUp;
-
-// import React from 'react';
-// import { StyleSheet, View, Button } from 'react-native';
-// import { WebView } from 'react-native-webview';
-
-// const HomeScreen = ({ navigation }) => {
-//   return (
-//     <View style={styles.container}>
-//       <WebView
-//         source={{ uri: 'http://church.stealthems.in/Home/RegistrationForm' }}
-//         style={styles.webview}
-//       />
-//       <View style={styles.buttonContainer}>
-//         <Button
-//           title="Go to Login"
-//           onPress={() => navigation.navigate('Login')}
-//         />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   webview: {
-//     flex: 1,
-//   },
-//   buttonContainer: {
-//     // position: 'absolute',
-//     bottom: 20,
-//     // right: 20,
-//     // left: 20,
-//     width:'25%',
-//     alignSelf:'center',
-//     alignItems:'center'
-//   },
-// });
-
-// export default HomeScreen;

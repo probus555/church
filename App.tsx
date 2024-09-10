@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {StyleSheet, useColorScheme} from 'react-native';
 import {
   Drawer,
@@ -15,6 +15,7 @@ import {dark, light} from './src/theme/themes';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import PinView from './src/components/pinView';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import DeviceInfo from 'react-native-device-info';
 // import SnackBar from './src/components/snackbar';
 // import DrawerNavigator from './src/navigation/drawer';
 
@@ -50,6 +51,7 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({});
 
 export default App;
+
 
 
 

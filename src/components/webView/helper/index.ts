@@ -39,3 +39,5 @@ const autoLoginUtil = (
   `;
   export default autoLoginUtil;
   
+
+  // : 'http://church.stealthems.in?loginId=priya&password=priya',

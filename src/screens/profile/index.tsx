@@ -1,5 +1,5 @@
 import React from 'react';
-import {ImageBackground, Pressable, ScrollView, View} from 'react-native';
+import {ImageBackground, Pressable, ScrollView, View,TouchableOpacity} from 'react-native';
 import useStyles from './styles';
 import images from '../../asset/images';
 import useProfile from './useProfile';
@@ -38,7 +38,7 @@ const Profile: React.FC<Props> = ({route}) => {
   const {userDetails} = useProfile(userId);
   const navigation = useNavigation<NavigationActionType>();
   const theme = useAppTheme();
-console.log('userDetails?.photo',userDetails?.photo)
+  console.log('userDetails?.photo', userDetails?.photo);
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -54,23 +54,16 @@ console.log('userDetails?.photo',userDetails?.photo)
             />
             <View style={styles.iconContainer}>
               <Icon
-                name="bell"
+                name="cog-outline"
                 size={22}
-                color={theme.colors.background}
-                style={{marginRight: 5}}
+                color={'#ffffff'}
+                onPress={() => navigation.navigate(screenNames.settingScreen)}
               />
-              {!userId && (
-                <Icon
-                  name="cog-outline"
-                  size={22}
-                  color={'#ffffff'}
-                  onPress={() => navigation.navigate(screenNames.settingScreen)}
-                />
-              )}
             </View>
           </View>
 
           <View style={styles.profileContainer}>
+            
             <FastImage
               resizeMode="cover"
               style={styles.profileImage}
@@ -94,6 +87,18 @@ console.log('userDetails?.photo',userDetails?.photo)
             ) : (
               <></>
             )}
+                 {/* <TouchableOpacity
+          style={{   backgroundColor: '#000000',
+            padding: 10,
+            borderRadius: 5,
+            alignItems: 'center',
+            marginTop: 20,
+            marginHorizontal: 20,}}
+          onPress={() => navigation.navigate(screenNames.editProfileScreen, { userId })}
+        >
+          <Text style={{  color: '#fff',
+    fontSize: 16,}}>Edit Profile</Text>
+        </TouchableOpacity> */}
             {userId && (
               <View style={styles.profileIconsContainer}>
                 <Pressable
@@ -132,18 +137,10 @@ console.log('userDetails?.photo',userDetails?.photo)
               </View>
             )}
           </View>
+          
         </LinearGradient>
         {userDetails ? (
           <View style={styles.userDetailContainer}>
-            <View style={styles.userDetailsWrapper}>
-              <Icon
-                name="card-account-details"
-                size={25}
-                color={theme.colors.tertiary}
-              />
-              <Text style={styles.userDetailText}>{userDetails?.id}</Text>
-            </View>
-
             <View style={styles.userDetailsWrapper}>
               <Icon
                 name="calendar-month"
@@ -176,36 +173,6 @@ console.log('userDetails?.photo',userDetails?.photo)
                 </Text>
               </View>
             )}
-            {/* <View style={styles.userDetailsWrapper}>
-              <Icon
-                name={
-                  userDetails?.gender?.toUpperCase() === 'MALE'
-                    ? 'gender-male'
-                    : 'gender-female'
-                }
-                size={25}
-                color={theme.colors.tertiary}
-              />
-              <Text style={styles.userDetailText}>{userDetails?.gender}</Text>
-            </View> */}
-            {/* {userDetails?.bloodGroup && (
-              <View style={styles.userDetailsWrapper}>
-                <Icon name="water" size={25} color={theme.colors.tertiary} />
-                <Text style={styles.userDetailText}>
-                  {userDetails?.bloodGroup}
-                </Text>
-              </View>
-            )} */}
-            <View style={styles.userDetailsWrapper}>
-              {/* <Icon
-                name="calendar-clock"
-                size={25}
-                color={theme.colors.tertiary}
-              /> */}
-              <Text style={styles.userDetailText}>
-                {userDetails?.memberSince}
-              </Text>
-            </View>
           </View>
         ) : (
           <></>
@@ -216,3 +183,8 @@ console.log('userDetails?.photo',userDetails?.photo)
 };
 
 export default Profile;
+
+
+
+
+

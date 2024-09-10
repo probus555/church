@@ -8,6 +8,8 @@ import Profile from '../../screens/profile';
 import SettingScreen from '../../screens/setting';
 import CreatePostScreen from '../../screens/community/components/createPost';
 import BottomNavigator from '../bottomNavigator';
+import NotificationScreen from '../../screens/notification';
+import EditProfileScreen from '../../screens/editProfile';
 // import Home from '../../screens/home';
 
 import MyWebView from '../../components/webView';
@@ -15,6 +17,7 @@ import {useAppTheme} from '../../theme';
 import Header from './components/header';
 import {RootStackParamList, screenNames} from './types';
 import {Text} from 'react-native-paper';
+
 
 type Props = {};
 
@@ -39,14 +42,20 @@ const RootNavigator = (props: Props) => {
         />
         <Stack.Screen
           name={screenNames.signup}
-          options={{title: 'Registration'}}
+          options={{headerShown: false}}
+          // options={{title: 'Registration'}}
           component={SignUp}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name={screenNames.profile}
           options={{headerShown: false}}
           component={Profile}
-        />
+        /> */}
+           <Stack.Screen
+        name={screenNames.profile}
+        options={{title: 'Profile', headerShown: false}}
+        component={Profile}
+      />
         <Stack.Screen
           name={screenNames.settingScreen}
           options={{title: 'Preferences'}}
@@ -61,6 +70,16 @@ const RootNavigator = (props: Props) => {
         name={screenNames.createPost}
         options={{title: 'Create Post'}}
         component={CreatePostScreen}
+      />
+           <Stack.Screen
+        name={screenNames.notificationScreen}
+        options={{title: 'Notifications'}}
+        component={NotificationScreen}
+      />
+            <Stack.Screen
+        name={screenNames.editProfileScreen}
+        options={{title: 'Edit Profile'}}
+        component={EditProfileScreen}
       />
         {/* <Stack.Screen
           name={screenNames.myWebView}

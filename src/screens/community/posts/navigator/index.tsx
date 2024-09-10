@@ -14,7 +14,7 @@ const PostTabs = (props: Props) => {
     <Tab.Navigator>
       <Tab.Screen name="Notices" component={Notices} />
       <Tab.Screen name="Events" component={Events} />
-      <Tab.Screen name="News" component={News} />
+      {/* <Tab.Screen name="News" component={News} /> */}
     </Tab.Navigator>
   );
 };
