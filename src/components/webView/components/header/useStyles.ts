@@ -15,7 +15,6 @@ const useStyles = () => {
     headerText: {
       color: theme.colors.onPrimary,
       fontSize: 20,
-
       padding: 10,
     },
     notificationContainer: {

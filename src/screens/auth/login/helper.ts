@@ -1,7 +1,7 @@
 import {CustomerData, Errors} from './useLogin';
 
 const checkValidation = (customerData: CustomerData) => {
-  const newErrors: Errors = {customerCode: '', loginId: '', password: ''};
+  const newErrors: Errors = {loginId: '', password: ''};
 
   if (!customerData.loginId) {
     newErrors.loginId = 'Login Id is required';
