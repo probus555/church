@@ -19,7 +19,7 @@ const EditProfileScreen = () => {
     const [file, setFile] = useState<any>(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [dob, setDob] = useState<Date | undefined>(undefined);
-
+   console.log('file',file)
     // Role-based state variables
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');

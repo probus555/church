@@ -93,7 +93,7 @@ const useLogin = () => {
       console.log('FCM permission granted:', permissionGranted);
       console.log('FCM token received:', token);
   
-      if (permissionGranted && token) {
+      if (token) {
         const addTokenResponse = await addFCMToken({fcmTokens: token}).unwrap();
         console.log('addTokenResponse:', addTokenResponse);
       } else {
